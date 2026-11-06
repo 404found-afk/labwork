@@ -1,50 +1,37 @@
+import casino_data as data
+
 print('Здравствуйте, вас приветствует казино "Удача"! Ваш баланс: 1000')
 balance = 1000
 wins = 0
 loses = 0
-b = 0
+in_streak = False
 
 while True:
     command = input("Введите команду: ").strip().lower()
 
     if command == "balance":
-        print(balance)
+        print(f"Ваш текущий баланс: {balance}")
+    elif command == "help":
+        data.show_help()
     elif command == "history":
-        print(f'Всего побед: {wins}, вссего поражений: {loses}')
+        print(f'Всего побед: {wins}, всего поражений: {loses}')
     elif command == "exit":
+        print("Спасибо за игру! До свидания.")
         break
     else:
         try:
-            commandd, summa, stavka = command.split()
+            commandd, amount_str = command.split()
             if commandd == "bet":
                 try:
-                    summa = int(summa)
-                    if summa > balance:
-                        print("У вас недостаточно баланса.")
-                    else:
-                        if stavka == "even":
-                            if (wins + loses) % 2 == 0:
-                                balance += summa
-                                print("Поздравляю, вы выграли.")
-                                wins += 1
-                            else:
-                                balance -= summa
-                                print("К сожалению, вы проиграли.")
-                                loses += 1
-                        elif stavka == "odd":
-                            if (wins+loses)%2 == 1:
-                                balance += summa
-                                print("Поздравляю, вы выграли.")
-                                wins += 1
-                            else:
-                                balance -= summa
-                                print("К сожалению, вы проиграли.")
-                                loses += 1
-                        else:
-                            print("Неверная ставка.")
-                except TypeError:
-                    print("Неверно введена сумма.")
+                    amount = int(amount_str)
+
+                    new_balance = data.make_bet(balance, amount)
+                    if new_balance is not None:
+                        balance = new_balance
+                        wins, loses, balance, in_streak = data.spin(wins, loses, balance, amount, in_streak)
+                except ValueError:
+                    print("Неверно введена сумма. Введите целое число.")
             else:
-                print("Команда не найдена.")
-        except:
-            print("Неверный ввод команды.")
+                print("Команда не найдена. Введите 'help' для списка команд.")
+        except ValueError:
+            print("Неверный ввод команды. Введите 'help' для списка команд.")
